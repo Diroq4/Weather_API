@@ -122,9 +122,50 @@ class WeatherApp(QWidget):
 #We just take the error messages from the get weather fuction and display it on the app
         self.temp_label.setStyleSheet("font-size: 30px;")
         self.temp_label.setText(message)
+#We are doing the clear method this is beacause if we look at a city and got the infor, and the look at other city and there is an error it will delete the emoji and description from the app
+        self.emoji_label.clear()
+        self.description_weather_label.clear()
 
     def display_weather(self, data):
-        print(data)
+#Get the temperature
+        self.temp_label.setStyleSheet("font-size: 50px;")
+        temp_kelvin = data["main"]["temp"] #I call the temperature value out of the full data that the API returns when calling it
+        temp_celcius = temp_kelvin - 273.15
+        weather_id = data["weather"][0]["id"]
+
+#Get the weather description (sunny, cloudy...). in our data from the API it returns as a list so we need index to return the description how we want it
+        weather_description = data["weather"][0]["description"]
+        
+#Here we show the temperature, emoji and description into our app
+        self.temp_label.setText(f"{temp_celcius:.0f}°C")
+        self.emoji_label.setText(self.get_weather_emoji(weather_id))
+        self.description_weather_label.setText(weather_description)
+
+    @staticmethod
+    def get_weather_emoji(weather_id):
+#Add emoji for presentation base on weather NOTE weather_id we get it from the data the API returns when calling a city and on display_weather method, we will base one it and the chart we find under weather conditions code in the API webpage - https://openweathermap.org/weather-conditions
+        if weather_id >= 200 and weather_id <= 232:
+            return "⛈️"
+        elif weather_id >= 300 and weather_id <=321:
+            return "🌦️"
+        elif 500 <= weather_id <=531:
+            return "🌧️"
+        elif 600 <= weather_id <= 622:
+            return "🌨️"
+        elif 701 <= weather_id <=741:
+            return "🌫️"
+        elif weather_id == 762:
+            return "🌋"
+        elif weather_id == 771:
+            return "💨"
+        elif weather_id == 781:
+            return "🌪️"
+        elif weather_id == 800:
+            return "☀️"
+        elif 801 <= weather_id <= 804:
+            return "☁️"
+        else:
+            return ""
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
